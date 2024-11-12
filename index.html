@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>숫자 야구 게임</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Silkscreen:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+        <div class="game-container">
+            <h1>⚾️ Baseball Game ⚾️</h1>
+            <p>1~9까지의 서로 다른 세자리 숫자를 맞춰보세요</p>
+
+            <div class="hint-information-container">
+                <h3>✨ HINT ✨</h3>
+                <p>숫자 위치가 같으면? 스트라이크</p>
+                <p>숫자 위치는 다르지만 존재하면? 볼</p>
+                <p>모두 다르면? 낫싱</p>
+            </div>
+
+            <div class="input-container">
+                <input
+                    class="user-input"
+                    type="text"
+                    maxlength="3"
+                    placeholder="123❓"
+                />
+                <button class="go-btn">🥎</button>
+            </div>
+
+            <div class="hint-output-container">
+                <div class="user-guess"></div>
+                <div class="hint-output"></div>
+            </div>
+
+            <div class="game-result">
+                <p class="result-output"></p>
+            </div>
+        </div>
+    </body>
+    <script src="baseball-game.js"></script>
+</html>
