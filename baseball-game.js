@@ -1,6 +1,5 @@
 window.onload = function () {
     var userInput = document.querySelector('.user-input');
-    var hintOutput = document.querySelector('.hint-output');
     var resultOutput = (document.querySelector('.result-output'));
     var userGuess = document.querySelector('.user-guess');
     var goBtn = document.querySelector('.go-btn');
@@ -48,7 +47,6 @@ window.onload = function () {
             return;
         computerNumbers = generateThreeUniqueDigits();
         resultOutput.textContent = '';
-        hintOutput.textContent = '';
         userInput.value = '';
         userGuess.innerHTML = '';
         guessCount = 1;
