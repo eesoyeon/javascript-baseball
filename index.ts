@@ -49,9 +49,9 @@ function getHintMessage(
 
     if (countStrike === 0 && countBall === 0) {
         return '낫싱';
-    } else if (countBall !== 0) {
+    } else if (countStrike === 0 && countBall !== 0) {
         return `${countBall}볼`;
-    } else if (countStrike !== 0) {
+    } else if (countStrike !== 0 && countBall === 0) {
         return `${countStrike}스트라이크`;
     } else {
         return `${countBall}볼 ${countStrike}스트라이크`;

@@ -72,10 +72,10 @@ function getHintMessage(computerNumbers, userNumbers) {
     if (countStrike === 0 && countBall === 0) {
         return '낫싱';
     }
-    else if (countBall !== 0) {
+    else if (countStrike === 0 && countBall !== 0) {
         return "".concat(countBall, "\uBCFC");
     }
-    else if (countStrike !== 0) {
+    else if (countStrike !== 0 && countBall === 0) {
         return "".concat(countStrike, "\uC2A4\uD2B8\uB77C\uC774\uD06C");
     }
     else {
