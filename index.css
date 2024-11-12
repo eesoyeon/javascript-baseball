@@ -61,6 +61,7 @@ input.user-input {
     border-radius: 5px;
     padding: 10px;
     font-size: 1em;
+    border-radius: 0;
     width: 50%;
     text-align: center;
     box-sizing: border-box;
@@ -69,6 +70,9 @@ input.user-input {
 input.user-input:focus {
     border-color: rgb(234, 234, 66);
     outline: none;
+}
+input.user-input:focus::placeholder {
+    color: transparent;
 }
 
 input.user-input::placeholder {
@@ -116,7 +120,7 @@ button.go-btn:hover {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     margin-bottom: 20px;
 }
 
@@ -138,12 +142,11 @@ button.go-btn:hover {
     color: rgb(235, 184, 30);
     /* color: #900a0a; */
     border-radius: 5px;
-    letter-spacing: 12px;
+    letter-spacing: 15px;
 }
 
 .restart-btn:hover {
-    background-color: white;
+    background-color: beige;
     color: #900a0a;
-    /* color: rgb(235, 184, 30); */
     transition: background-color 0.3s;
 }
