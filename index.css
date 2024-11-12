@@ -3,7 +3,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100vw;
-    height: 90vh;
+    /* height: 100vh; */
     font-family: 'Silkscreen', sans-serif;
     background-color: whitesmoke;
     transform: rotate(0.04deg);
@@ -101,11 +101,14 @@ button.go-btn:hover {
     align-items: center;
     margin-top: 15px;
     padding: 20px;
-    gap: 20px;
     /* background-color: #f9f9fc; */
     /* border: 1px solid #ddd; */
     /* border-radius: 5px; */
     width: 90%;
+}
+
+.user-guess {
+    line-height: 2rem;
 }
 
 .game-result {

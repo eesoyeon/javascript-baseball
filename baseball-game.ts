@@ -12,7 +12,6 @@ window.onload = function () {
     let gameOver = false;
 
     let guessCount = 1;
-    let hintCount = 1;
     let restartBtn: HTMLButtonElement | null = null;
 
     goBtn.addEventListener('click', handleUserInput);
@@ -28,21 +27,15 @@ window.onload = function () {
         }
 
         if (guessCount === 1) {
-            userGuess.textContent = 'Your Number: ';
+            userGuess.innerHTML = '';
         }
 
-        if (hintCount === 1) {
-            hintOutput.textContent = 'Hint: ';
-        }
+        const hint = getHintMessage(computerNumbers, userNumbers);
 
-        userGuess.textContent = `${userGuess.textContent} ${input}`;
+        userGuess.innerHTML += `${input}의 힌트는 "${hint}"입니다<br>`;
         guessCount++;
         userInput.value = '';
         userInput.focus();
-
-        const hint = calculateStrikeOrBall(computerNumbers, userNumbers);
-        hintOutput.textContent = `${hintOutput.textContent} ${hint}`;
-        hintCount++;
 
         if (hint === '3스트라이크') {
             resultOutput.textContent = `정답입니다 👍`;
@@ -75,9 +68,8 @@ window.onload = function () {
         resultOutput.textContent = '';
         hintOutput.textContent = '';
         userInput.value = '';
-        userGuess.textContent = '';
+        userGuess.innerHTML = '';
         guessCount = 1;
-        hintCount = 1;
         gameOver = false;
         userInput.disabled = false;
 
@@ -97,12 +89,11 @@ window.onload = function () {
         }
         return Array.from(uniqueDigits);
     }
-
     // 스트라이크, 볼 개수 계산 함수
     function calculateStrikeOrBall(
         computerNumbers: number[],
         userNumbers: number[]
-    ): string {
+    ): number[] {
         let countStrike = 0;
         let countBall = 0;
 
@@ -116,17 +107,24 @@ window.onload = function () {
             digit++;
         }
 
-        const hint = hintMessage(countStrike, countBall);
-        return hint;
+        return [countStrike, countBall];
     }
 
     // 힌트 문자열 반환
-    function hintMessage(countStrike: number, countBall: number): string {
+    function getHintMessage(
+        computerNumbers: number[],
+        userNumbers: number[]
+    ): string {
+        const [countStrike, countBall] = calculateStrikeOrBall(
+            computerNumbers,
+            userNumbers
+        );
+
         if (countStrike === 0 && countBall === 0) {
             return '낫싱';
-        } else if (countBall !== 0) {
+        } else if (countStrike === 0 && countBall !== 0) {
             return `${countBall}볼`;
-        } else if (countStrike !== 0) {
+        } else if (countStrike !== 0 && countBall === 0) {
             return `${countStrike}스트라이크`;
         } else {
             return `${countBall}볼 ${countStrike}스트라이크`;

@@ -7,7 +7,6 @@ window.onload = function () {
     var computerNumbers = generateThreeUniqueDigits();
     var gameOver = false;
     var guessCount = 1;
-    var hintCount = 1;
     var restartBtn = null;
     goBtn.addEventListener('click', handleUserInput);
     function handleUserInput() {
@@ -19,18 +18,13 @@ window.onload = function () {
             return;
         }
         if (guessCount === 1) {
-            userGuess.textContent = 'Your Number: ';
+            userGuess.innerHTML = '';
         }
-        if (hintCount === 1) {
-            hintOutput.textContent = 'Hint: ';
-        }
-        userGuess.textContent = "".concat(userGuess.textContent, " ").concat(input);
+        var hint = getHintMessage(computerNumbers, userNumbers);
+        userGuess.innerHTML += "".concat(input, "\uC758 \uD78C\uD2B8\uB294 \"").concat(hint, "\"\uC785\uB2C8\uB2E4<br>");
         guessCount++;
         userInput.value = '';
         userInput.focus();
-        var hint = calculateStrikeOrBall(computerNumbers, userNumbers);
-        hintOutput.textContent = "".concat(hintOutput.textContent, " ").concat(hint);
-        hintCount++;
         if (hint === '3스트라이크') {
             resultOutput.textContent = "\uC815\uB2F5\uC785\uB2C8\uB2E4 \uD83D\uDC4D";
             gameOver = true;
@@ -56,9 +50,8 @@ window.onload = function () {
         resultOutput.textContent = '';
         hintOutput.textContent = '';
         userInput.value = '';
-        userGuess.textContent = '';
+        userGuess.innerHTML = '';
         guessCount = 1;
-        hintCount = 1;
         gameOver = false;
         userInput.disabled = false;
         if (restartBtn) {
@@ -89,18 +82,18 @@ window.onload = function () {
             }
             digit++;
         }
-        var hint = hintMessage(countStrike, countBall);
-        return hint;
+        return [countStrike, countBall];
     }
     // 힌트 문자열 반환
-    function hintMessage(countStrike, countBall) {
+    function getHintMessage(computerNumbers, userNumbers) {
+        var _a = calculateStrikeOrBall(computerNumbers, userNumbers), countStrike = _a[0], countBall = _a[1];
         if (countStrike === 0 && countBall === 0) {
             return '낫싱';
         }
-        else if (countBall !== 0) {
+        else if (countStrike === 0 && countBall !== 0) {
             return "".concat(countBall, "\uBCFC");
         }
-        else if (countStrike !== 0) {
+        else if (countStrike !== 0 && countBall === 0) {
             return "".concat(countStrike, "\uC2A4\uD2B8\uB77C\uC774\uD06C");
         }
         else {
