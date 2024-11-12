@@ -3,7 +3,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 100vw;
-    height: 100vh;
+    height: 90vh;
     font-family: 'Silkscreen', sans-serif;
     background-color: whitesmoke;
     transform: rotate(0.04deg);
