@@ -25,7 +25,7 @@ window.onload = function () {
         userInput.value = '';
         userInput.focus();
         if (hint === '3스트라이크') {
-            resultOutput.textContent = "GOOD\uD83D\uDC4D";
+            resultOutput.textContent = "HOME RUN\uD83D\uDC4D";
             gameOver = true;
             setGameOver();
         }
