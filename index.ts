@@ -1,145 +1,192 @@
 import * as readline from 'readline';
 
-const rl = readline.createInterface({
+const inputInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
 
-// 서로 다른 세자리 수 생성 함수
-function generateThreeUniqueDigits(): number[] {
-    const uniqueDigits = new Set<number>();
+// ---------------------------------------
 
-    while (uniqueDigits.size < 3) {
-        const number = Math.floor(Math.random() * 9) + 1;
-        uniqueDigits.add(number);
-    }
-    return Array.from(uniqueDigits);
+// BallNumber 타입 선언
+type BallNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+// BallNumber로 이루어진 길이 3인 배열
+type threeBallNumbers = [BallNumber, BallNumber, BallNumber];
+
+const ballNumberArray: BallNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// 정답 맞히는 횟수 제한
+const GAME_LIMIT = 10 as const;
+
+// 길이 3
+// const NUMBER_LENGTH = 3 as const;
+
+// 전적
+interface GameRecord {
+    recordGameArray: string[]; // 게임 저장하는 배열 - 이기면 w, 지면 l 저장
+    winNumber: number; // 게임 몇 판 이겼어?
+    loseNumber: number; // 게임 몇 판 졌어?
 }
 
-// 스트라이크, 볼 개수 계산 함수
-function calculateStrikeOrBall(
-    computerNumbers: number[],
-    userNumbers: number[]
-): number[] {
-    let countStrike = 0;
-    let countBall = 0;
-
-    let digit = 0;
-    while (digit < 3) {
-        if (computerNumbers[digit] === userNumbers[digit]) {
-            countStrike++;
-        } else if (computerNumbers.includes(userNumbers[digit])) {
-            countBall++;
-        }
-        digit++;
-    }
-
-    return [countStrike, countBall];
+interface Common {
+    gameLimit: number; // 게임 제한 횟수
+    submitCount: number; // 제출 횟수
 }
 
-// 힌트 문자열 반환
-function getHintMessage(
-    computerNumbers: number[],
-    userNumbers: number[]
-): string {
-    const [countStrike, countBall] = calculateStrikeOrBall(
-        computerNumbers,
-        userNumbers
-    );
-
-    if (countStrike === 0 && countBall === 0) {
-        return '낫싱';
-    } else if (countStrike === 0 && countBall !== 0) {
-        return `${countBall}볼`;
-    } else if (countStrike !== 0 && countBall === 0) {
-        return `${countStrike}스트라이크`;
-    } else {
-        return `${countBall}볼 ${countStrike}스트라이크`;
-    }
+// 컴퓨터
+interface Computer extends Common {
+    computerNumbers: BallNumber[];
+    answer: string; // 컴퓨터의 답
 }
 
-// 게임 시작
-async function startGame(): Promise<void> {
-    const computerNumbers = generateThreeUniqueDigits();
-    console.log('컴퓨터가 숫자를 뽑았습니다.\n');
-
-    while (true) {
-        const userNumbers = await getUserInput();
-
-        if (!isValidUserNumbers(userNumbers)) {
-            console.log(
-                '1~9까지의 숫자 중에서 서로 다른 세자리 수를 입력하세요.'
-            );
-            continue;
-        }
-
-        const hint = getHintMessage(computerNumbers, userNumbers);
-        console.log(hint);
-
-        if (hint === '3스트라이크') {
-            winGame();
-            break;
-        }
-    }
+// 사용자
+interface User extends Common {
+    userNumbers: BallNumber[];
 }
 
-// 사용자 입력값 받는 함수
-function getUserInput(): Promise<number[]> {
-    return new Promise<number[]>((resolve) =>
-        rl.question('숫자를 입력해주세요: ', (userInput) =>
-            resolve(userInput.split('').map(Number))
+// 게임 진행 상태
+enum GameState {
+    startGame = '1',
+    endGame = '9',
+}
+
+// 게임 제출 횟수 입력받기
+const getUserSubmitLimit = () => {
+    return new Promise<Common>((resolve) =>
+        inputInterface.question(
+            '게임 제출 횟수를 입력해주세요: ',
+            (userSubmitLimit) => {
+                const submitCount = Number(userSubmitLimit);
+
+                resolve({ gameLimit: GAME_LIMIT, submitCount });
+            }
         )
     );
-}
+};
 
-// 모두 맞췄을 때 출력하는 함수
-function winGame(): void {
-    console.log('\n3개의 숫자를 모두 맞히셨습니다.');
-    console.log('-------게임 종료-------\n');
-}
+// user 숫자 입력받기 - 반환값이 [1, 1, 2] + 중복 제거/방지
+const getUserInput = (submitCount: number): Promise<User> => {
+    return new Promise<User>((resolve) =>
+        inputInterface.question('숫자를 입력해주세요: ', (userInput) => {
+            const userNumbers = userInput
+                .split('')
+                .map(Number) as threeBallNumbers;
 
-// 사용자 입력값 유효성 검사
-function isValidUserNumbers(userNumbers: number[]): boolean {
-    const userInputLength = userNumbers.length;
-    const includeZero = userNumbers.includes(0);
-    const countUniqueNumber = new Set(userNumbers).size;
+            if (isValidUserInput) {
+                resolve({
+                    userNumbers,
+                    gameLimit: GAME_LIMIT,
+                    submitCount,
+                });
+            } else {
+                console.log(
+                    '잘못된 입력입니다. 중복되지 않은 3개의 숫자를 입력해주세요.'
+                );
+            }
+        })
+    );
+};
 
-    return userInputLength === 3 && !includeZero && countUniqueNumber === 3;
-}
-
-// 애플리케이션 실행
-async function startApplication(): Promise<void> {
-    let isRunning = true;
-
-    while (isRunning) {
-        const input = await new Promise<string>((resolve) =>
-            rl.question(
-                '게임을 새로 시작하려면 1, 종료하려면 9를 입력하세요.\n',
-                resolve
-            )
-        );
-
-        isRunning = await startOrEndGame(input);
-    }
-}
-
-// 게임 시작 or 종료
-async function startOrEndGame(input: string): Promise<boolean> {
-    if (input === '1') {
-        await startGame();
-    } else if (input === '9') {
-        endGame();
+// 사용자 입력 값 유효성 검사 - 길이 3, 중복 x, 0 포함 x
+const isValidUserInput = (userNumbers: number[]) => {
+    if (userNumbers.filter((number) => isNaN(number)).length !== 0)
         return false;
-    } else {
-        console.log('잘못된 입력입니다. 1 또는 9를 입력해주세요.\n');
+
+    return (
+        userNumbers.length === 3 &&
+        !userNumbers.includes(0) &&
+        new Set(userNumbers).size === 3
+    );
+};
+
+// 제출 횟수 유효성 검사
+const isValidSubmitLimit = (submitCount: number): boolean => {
+    if (submitCount > GAME_LIMIT) {
+        console.log('잘못된 입력입니다. 제출 횟수는 10번 이하여야 합니다.');
+        return false;
     }
     return true;
-}
+};
 
-// 애플리케이션 종료
-function endGame(): void {
-    console.log('\n애플리케이션이 종료되었습니다.');
-    rl.close();
-}
+// 컴퓨터가 뽑은 세자리 랜덤 숫자
+const getThreeRandomNumbers = (ballNumberArray: BallNumber[]) => {
+    const shuffledArray = ballNumberArray.sort(() => Math.random() - 0.5);
 
-startApplication();
+    // 3을 상수화 해야함 - 수정필요
+    return shuffledArray.slice(0, 3);
+};
+
+/**
+ * 볼이냐 ,스트라이크냐
+ * @param computerNumbers
+ * @param userNumber
+ * @param userNumberIndex
+ * @returns
+ */
+const isBall = (
+    computerNumbers: BallNumber[],
+    userNumber: BallNumber,
+    userNumberIndex: number
+) => {
+    return (
+        computerNumbers.indexOf(userNumber) !== userNumberIndex &&
+        computerNumbers.includes(userNumber)
+    );
+};
+
+const isStrike = (
+    computerNumbers: BallNumber[],
+    userNumber: BallNumber,
+    userNumberIndex: number
+) => {
+    return computerNumbers.indexOf(userNumber) === userNumberIndex;
+};
+
+/**
+ *  볼, 스트라이크 개수 세기
+ * @param computerNumbers
+ * @param userNumbers
+ * @returns
+ */
+const ballCount = (
+    computerNumbers: BallNumber[],
+    userNumbers: BallNumber[]
+) => {
+    return userNumbers.filter((userNumber, userNumberIndex) =>
+        isBall(computerNumbers, userNumber, userNumberIndex)
+    ).length;
+};
+
+const strikeCount = (
+    computerNumbers: BallNumber[],
+    userNumbers: BallNumber[]
+) => {
+    return userNumbers.filter((userNumber, userNumberIndex) =>
+        isStrike(computerNumbers, userNumber, userNumberIndex)
+    ).length;
+};
+
+// 힌트 출력
+const hintMessage = (
+    computerNumbers: BallNumber[],
+    userNumbers: BallNumber[]
+) => {
+    const ballNumber = ballCount(computerNumbers, userNumbers);
+    const strikeNumber = strikeCount(computerNumbers, userNumbers);
+
+    if (strikeNumber === 0 && ballNumber === 0) {
+        return '낫싱';
+    } else if (strikeNumber === 0 && ballNumber !== 0) {
+        return `${ballNumber}볼`;
+    } else if (strikeNumber !== 0 && ballNumber === 0) {
+        return `${strikeNumber}스트라이크`;
+    } else {
+        return `${ballNumber}볼 ${strikeNumber}스트라이크`;
+    }
+};
+
+// 전적
+
+// 통계
+
+// 게임 시작
