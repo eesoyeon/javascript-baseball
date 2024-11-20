@@ -1,64 +1,26 @@
 import * as readline from 'readline';
+import { User, Computer, GameRecord, GameResult } from './interfaces';
+import { GameState } from './enums';
+import { BallNumber, ballNumberArray } from './types';
 
 const inputInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
 
-// ---------------------------------------
-
-// BallNumber 타입 선언
-type BallNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
-// BallNumber로 이루어진 길이 3인 배열
-type threeBallNumbers = [BallNumber, BallNumber, BallNumber];
-
-const ballNumberArray: BallNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-// 정답 맞히는 횟수 제한
 const GAME_LIMIT = 10 as const;
-
-// 길이 3
-// const NUMBER_LENGTH = 3 as const;
-
-// 전적
-interface GameRecord {
-    recordGameArray: string[]; // 게임 저장하는 배열 - 이기면 w, 지면 l 저장
-    winNumber: number; // 게임 몇 판 이겼어?
-    loseNumber: number; // 게임 몇 판 졌어?
-}
-
-interface Common {
-    gameLimit: number; // 게임 제한 횟수
-    submitCount: number; // 제출 횟수
-}
-
-// 컴퓨터
-interface Computer extends Common {
-    computerNumbers: BallNumber[];
-    answer: string; // 컴퓨터의 답
-}
-
-// 사용자
-interface User extends Common {
-    userNumbers: BallNumber[];
-}
-
-// 게임 진행 상태
-enum GameState {
-    startGame = '1',
-    endGame = '9',
-}
+const NUMBER_LENGTH = 3 as const;
 
 // 게임 제출 횟수 입력받기
-const getUserSubmitLimit = () => {
-    return new Promise<Common>((resolve) =>
+const getUserSubmitLimit = async (): Promise<User> => {
+    return new Promise<User>((resolve) =>
         inputInterface.question(
-            '게임 제출 횟수를 입력해주세요: ',
-            (userSubmitLimit) => {
+            '컴퓨터에게 몇 번을 도전할지 횟수를 입력해주세요.\n',
+            async (userSubmitLimit) => {
                 const submitCount = Number(userSubmitLimit);
+                const { userNumbers } = await getUserInput(submitCount);
 
-                resolve({ gameLimit: GAME_LIMIT, submitCount });
+                resolve({ userNumbers, submitCount });
             }
         )
     );
@@ -68,14 +30,11 @@ const getUserSubmitLimit = () => {
 const getUserInput = (submitCount: number): Promise<User> => {
     return new Promise<User>((resolve) =>
         inputInterface.question('숫자를 입력해주세요: ', (userInput) => {
-            const userNumbers = userInput
-                .split('')
-                .map(Number) as threeBallNumbers;
+            const userNumbers = userInput.split('').map(Number);
 
-            if (isValidUserInput) {
+            if (isValidUserInput(userNumbers)) {
                 resolve({
                     userNumbers,
-                    gameLimit: GAME_LIMIT,
                     submitCount,
                 });
             } else {
@@ -83,20 +42,22 @@ const getUserInput = (submitCount: number): Promise<User> => {
                     '잘못된 입력입니다. 중복되지 않은 3개의 숫자를 입력해주세요.'
                 );
             }
+            // submitCount--;
         })
     );
 };
 
 // 사용자 입력 값 유효성 검사 - 길이 3, 중복 x, 0 포함 x
-const isValidUserInput = (userNumbers: number[]) => {
-    if (userNumbers.filter((number) => isNaN(number)).length !== 0)
-        return false;
-
-    return (
-        userNumbers.length === 3 &&
-        !userNumbers.includes(0) &&
-        new Set(userNumbers).size === 3
+const isValidUserInput = (
+    userNumbers: number[]
+): userNumbers is BallNumber[] => {
+    const isAllBallNumbers = userNumbers.every((number) =>
+        ballNumberArray.includes(number as BallNumber)
     );
+    const isValidLength = userNumbers.length === NUMBER_LENGTH;
+    const hasNoDuplicate = new Set(userNumbers).size === NUMBER_LENGTH;
+
+    return isAllBallNumbers && isValidLength && hasNoDuplicate;
 };
 
 // 제출 횟수 유효성 검사
@@ -112,17 +73,9 @@ const isValidSubmitLimit = (submitCount: number): boolean => {
 const getThreeRandomNumbers = (ballNumberArray: BallNumber[]) => {
     const shuffledArray = ballNumberArray.sort(() => Math.random() - 0.5);
 
-    // 3을 상수화 해야함 - 수정필요
-    return shuffledArray.slice(0, 3);
+    return shuffledArray.slice(0, NUMBER_LENGTH);
 };
 
-/**
- * 볼이냐 ,스트라이크냐
- * @param computerNumbers
- * @param userNumber
- * @param userNumberIndex
- * @returns
- */
 const isBall = (
     computerNumbers: BallNumber[],
     userNumber: BallNumber,
@@ -142,12 +95,6 @@ const isStrike = (
     return computerNumbers.indexOf(userNumber) === userNumberIndex;
 };
 
-/**
- *  볼, 스트라이크 개수 세기
- * @param computerNumbers
- * @param userNumbers
- * @returns
- */
 const ballCount = (
     computerNumbers: BallNumber[],
     userNumbers: BallNumber[]
@@ -185,8 +132,71 @@ const hintMessage = (
     }
 };
 
-// 전적
+// 기록
+// [1] / 시작시간: 2024. 04. 07 23:12 / 종료시간: 2024. 04. 07 23:13 / 횟수: 5 / 승리자: 사용자1
+const showGameRecords = () => {};
 
 // 통계
+// 가장 적은 횟수: 5회 - [1]
+// 가장 많은 횟수: 5회 - [1]
+// 가장 많이 적용된 승리/패패 횟수: 5회 - [1]
+// 가장 큰 값으로 적용된 승리/패패 횟수: 5회 - [1]
+// 가장 적은 값으로 적용된 승리/패패 횟수: 5회 - [1]
+// 적용된 승리/패패 횟수 평균: 5회
+// 컴퓨터가 가장 많이 승리한 승리/패패 횟수: 0회
+// 사용자가 가장 많이 승리한 승리/패패 횟수: 5회
+const showGameStatistics = () => {};
 
-// 게임 시작
+// 게임 시작 함수
+const startGame = async () => {
+    const computerNumbers = getThreeRandomNumbers(ballNumberArray);
+    const user = await getUserSubmitLimit(); // 사용자 숫자, 제출 횟수 (user.userNumbers, user.submitCount)
+
+    let attempts = 0;
+    while (attempts < user.submitCount) {
+        const userInput = await getUserInput(user.submitCount - attempts);
+        const hint = hintMessage(computerNumbers, userInput.userNumbers);
+
+        console.log(hint);
+        if (hint === '3스트라이크') {
+            console.log('3개의 숫자를 모두 맞히셨습니다.\n');
+            console.log('사용자가 승리하였습니다.\n-------게임 종료-------');
+            break;
+        }
+        attempts++;
+    }
+
+    console.log('제한된 횟수를 모두 사용하여, 컴퓨터가 승리하였습니다.');
+    initGame();
+};
+
+// 게임 상태 설정
+const initGame = () => {
+    inputInterface.question(
+        '게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.\n',
+        (input) => {
+            switch (input) {
+                case GameState.startGame: // 1
+                    // 게임 시작하는 함수
+                    startGame();
+                    break;
+                case GameState.showGameRecords: // 2
+                    // 기록 보여주는 함수
+                    break;
+                case GameState.showGameStatistics: // 3
+                    // 통계 보여주는 함수
+                    break;
+                case GameState.endGame: // 9
+                    console.log('애플리케이션이 종료되었습니다.');
+                    inputInterface.close();
+                    break;
+                default:
+                    console.log('잘못된 입력입니다. 다시 입력해주세요.');
+                    break;
+            }
+        }
+    );
+    inputInterface.on('close', function () {
+        process.exit();
+    });
+};
