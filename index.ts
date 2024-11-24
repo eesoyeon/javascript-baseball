@@ -250,7 +250,7 @@ const showStatistics = (record: GameRecord) => {
             `컴퓨터가 총 승리한 횟수: ${statistics.computerWinsCount}회`
         );
         console.log(`사용자가 총 승리한 횟수: ${statistics.userWinsCount}회`);
-        console.log(`-------통계 종료-------\n`);
+        console.log(`\n-------통계 종료-------\n`);
     }
     return initGame();
 };
