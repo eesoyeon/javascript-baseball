@@ -192,7 +192,7 @@ var getStatistics = function (record) {
     var attempts = record.results.map(function (result) { return result.attempts; });
     var minAttempts = Math.min.apply(Math, attempts);
     var maxAttempts = Math.max.apply(Math, attempts);
-    var avgAttempts = attempts.reduce(function (sum, current) { return sum + current; }, 0) / attempts.length;
+    var avgAttempts = (attempts.reduce(function (sum, current) { return sum + current; }, 0) / attempts.length).toFixed(2);
     var maxAttemptsIds = record.results
         .filter(function (result) { return result.attempts === maxAttempts; })
         .map(function (result) { return result.id; });
@@ -229,10 +229,11 @@ var showStatistics = function (record) {
         console.log("\uC2DC\uB3C4 \uD69F\uC218\uC758 \uD3C9\uADE0 : ".concat(statistics.avgAttempts, "\uD68C"));
         console.log("\uCEF4\uD4E8\uD130\uAC00 \uCD1D \uC2B9\uB9AC\uD55C \uD69F\uC218: ".concat(statistics.computerWinsCount, "\uD68C"));
         console.log("\uC0AC\uC6A9\uC790\uAC00 \uCD1D \uC2B9\uB9AC\uD55C \uD69F\uC218: ".concat(statistics.userWinsCount, "\uD68C"));
-        console.log("-------\uD1B5\uACC4 \uC885\uB8CC-------\n");
+        console.log("\n-------\uD1B5\uACC4 \uC885\uB8CC-------\n");
     }
     return initGame();
 };
+inputInterface.on('close', function () { return process.exit(); });
 var initGame = function () {
     inputInterface.question('게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.\n', function (state) {
         switch (state) {
@@ -255,7 +256,6 @@ var initGame = function () {
                 break;
         }
     });
-    inputInterface.on('close', function () { return process.exit(); });
 };
 var startGame = function () { return __awaiter(void 0, void 0, void 0, function () {
     var computer, gameLimit, userNumbers, startTime;
