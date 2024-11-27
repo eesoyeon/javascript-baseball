@@ -123,6 +123,20 @@ const hintMessage = (
    }
 };
 
+const formatDate = () => {
+   const date = new Date().toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+   });
+
+   return date;
+};
+
 const recordGame = (
    winner: 'User' | 'Computer',
    attempts: number,
@@ -132,16 +146,7 @@ const recordGame = (
    const result: GameResult = {
       id: gameRecord.totalGames + 1,
       startTime,
-      endTime: new Date().toLocaleString('ko-KR', {
-         year: 'numeric',
-         month: 'long',
-         day: 'numeric',
-         weekday: 'long',
-         hour: '2-digit',
-         minute: '2-digit',
-         second: '2-digit',
-         hour12: false,
-      }),
+      endTime: formatDate(),
       gameLimit,
       attempts,
       winner,
@@ -185,11 +190,9 @@ const getStatistics = (record: GameRecord) => {
    const gameLimits = record.results.map((result) => result.gameLimit);
    const minGameLimits = Math.min(...gameLimits);
    const maxGameLimits = Math.max(...gameLimits);
-
    const maxGameLimitIds = record.results
       .filter((result) => result.gameLimit === maxGameLimits)
       .map((result) => result.id);
-
    const minGameLimitIds = record.results
       .filter((result) => result.gameLimit === minGameLimits)
       .map((result) => result.id);
@@ -200,11 +203,9 @@ const getStatistics = (record: GameRecord) => {
    const avgAttempts = (
       attempts.reduce((sum, current) => sum + current, 0) / attempts.length
    ).toFixed(2);
-
    const maxAttemptsIds = record.results
       .filter((result) => result.attempts === maxAttempts)
       .map((result) => result.id);
-
    const minAttemptsIds = record.results
       .filter((result) => result.attempts === minAttempts)
       .map((result) => result.id);
@@ -254,7 +255,6 @@ const showStatistics = (record: GameRecord) => {
    return initGame();
 };
 
-inputInterface.on('close', () => process.exit());
 const initGame = () => {
    inputInterface.question(
       '게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.\n',
@@ -281,6 +281,7 @@ const initGame = () => {
       }
    );
 };
+inputInterface.on('close', () => process.exit());
 
 const startGame = async () => {
    const computer: Computer = {
@@ -291,16 +292,7 @@ const startGame = async () => {
    console.log('컴퓨터가 숫자를 뽑았습니다.\n');
    const gameLimit = await getSubmitLimit();
    const userNumbers = await getUserNumbers(0);
-   const startTime = new Date().toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-   });
+   const startTime = formatDate();
 
    playGame({ userNumbers, submitCount: 1 }, computer, gameLimit, startTime);
 };

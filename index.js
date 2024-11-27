@@ -132,20 +132,23 @@ var hintMessage = function (computerNumbers, userNumbers) {
         return "".concat(ballNumber, "\uBCFC ").concat(strikeNumber, "\uC2A4\uD2B8\uB77C\uC774\uD06C");
     }
 };
+var formatDate = function () {
+    var date = new Date().toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    });
+    return date;
+};
 var recordGame = function (winner, attempts, startTime, gameLimit) {
     var result = {
         id: types_1.gameRecord.totalGames + 1,
         startTime: startTime,
-        endTime: new Date().toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        }),
+        endTime: formatDate(),
         gameLimit: gameLimit,
         attempts: attempts,
         winner: winner,
@@ -233,7 +236,6 @@ var showStatistics = function (record) {
     }
     return initGame();
 };
-inputInterface.on('close', function () { return process.exit(); });
 var initGame = function () {
     inputInterface.question('게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.\n', function (state) {
         switch (state) {
@@ -257,6 +259,7 @@ var initGame = function () {
         }
     });
 };
+inputInterface.on('close', function () { return process.exit(); });
 var startGame = function () { return __awaiter(void 0, void 0, void 0, function () {
     var computer, gameLimit, userNumbers, startTime;
     return __generator(this, function (_a) {
@@ -273,16 +276,7 @@ var startGame = function () { return __awaiter(void 0, void 0, void 0, function 
                 return [4 /*yield*/, getUserNumbers(0)];
             case 2:
                 userNumbers = _a.sent();
-                startTime = new Date().toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false,
-                });
+                startTime = formatDate();
                 playGame({ userNumbers: userNumbers, submitCount: 1 }, computer, gameLimit, startTime);
                 return [2 /*return*/];
         }
