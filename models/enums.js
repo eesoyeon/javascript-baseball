@@ -7,5 +7,4 @@ var GameState;
     GameState["showGameRecords"] = "2";
     GameState["showGameStatistics"] = "3";
     GameState["endGame"] = "9";
-    GameState["runningGame"] = "RUNNING";
 })(GameState || (exports.GameState = GameState = {}));

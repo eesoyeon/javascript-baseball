@@ -3,5 +3,4 @@ export enum GameState {
    showGameRecords = '2',
    showGameStatistics = '3',
    endGame = '9',
-   runningGame = 'RUNNING',
 }
